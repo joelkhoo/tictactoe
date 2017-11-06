@@ -1,9 +1,11 @@
 import java.util.Scanner;
 import java.util.InputMismatchException;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FileReader;
 import java.io.IOException;
 /**
  * Tic-Tac-Toe: Two-player console, non-graphics, non-OO version.
@@ -36,11 +38,12 @@ public class tictactoe {
  
    // High score storage
    private static final String FILENAME = "highscore.txt";
+   private static final File file = new File(FILENAME);
    private static int[] scores = new int[3]; //#rounds played, #times X won, #times O won
 
    /** The entry main method (the program starts here) */
    public static void main(String[] args) {
-
+      readScores();
       // Initialize the game-board and current status
       System.out.print("What n by n size board do you wish to play?\nEnter number 1 or greater (Press ENTER to use default of 3): ");
       //default value of 3 if no proper number input detected
@@ -112,7 +115,7 @@ public class tictactoe {
    public static void updateGame(int theSeed, int currentRow, int currentCol) {
       if (hasWon(theSeed, currentRow, currentCol)) {  // check if winning move
          currentState = (theSeed == CROSS) ? CROSS_WON : NOUGHT_WON;
-         writeResult(currentState);
+         writeScores(currentState);
       } else if (isDraw()) {  // check for draw
          currentState = DRAW;
       }
@@ -241,14 +244,60 @@ public class tictactoe {
       return (userIn!=-1)? userIn : getInput(start,end);
    }
 
-    public static void readResult() {
+    public static void readScores() {
+        FileReader fr = null;
+        BufferedReader br = null;
 
-        BufferedWriter bw = null;
-        FileWriter fw = null;
+        if (!file.exists()) {
+          //no previous results
+          System.out.println("New Game");
+        } else {
+          //read previous
+          try {
+              fr = new FileReader(file);
+              br = new BufferedReader(fr);
+              
+              String line = br.readLine();
+              int counter = 0;
+              while (line!=null) {
+                  //System.out.println(line);
+                  line = br.readLine();
+
+                  try{
+                    scores[counter] = Integer.parseInt(line);
+                    System.out.println("Stored "+scores[counter]+" on "+counter);
+                  } catch (NumberFormatException e){
+                    //do nothing
+                    
+                  }
+                  
+                  counter++;
+              }
+
+            } catch (IOException e) {
+
+              e.printStackTrace();
+
+            } finally {
+
+              try {
+
+                fr.close();
+
+              } catch (IOException ex) {
+
+                ex.printStackTrace();
+
+              }
+            }
+          
+            System.out.println("Rounds Played: "+scores[0]+"\tDraws: "+(scores[0]-scores[1]-scores[2]));
+            System.out.println("Scores: X - "+scores[1]+"\t\tO - "+scores[2]);
+        }
 
     }   
 
-    public static void writeResult(int result) {
+    public static void writeScores(int result) {
 
         BufferedWriter bw = null;
         FileWriter fw = null;
@@ -263,13 +312,13 @@ public class tictactoe {
             default: break;
           }
           
-          String data = "";
+          String data = "RoundsPlayed,X_Won,O_Won\n";
 
           for(int i=0;i<scores.length;i++){
-            data+= (i!=(scores.length-1))? scores[i]+"," : scores[i];
+            data+= (i!=(scores.length-1))? scores[i]+"\n" : scores[i];
           }
 
-          File file = new File(FILENAME);
+          //File file = new File(FILENAME);
 
           // if file doesnt exists, then create it
           if (!file.exists()) {
@@ -282,7 +331,7 @@ public class tictactoe {
 
           bw.write(data);
 
-          //System.out.println("Done");
+          System.out.println("New scores saved");
 
         } catch (IOException e) {
 
