@@ -79,8 +79,11 @@ public class tictactoe {
          String playerName = (theSeed == CROSS)? "X" : "O";
          System.out.print("Player '"+playerName+"', enter your move (row[1-"+ROWS+"] column[1-"+COLS+"]): ");
 
-         int row = in.nextInt() - 1;  // array index starts at 0 instead of 1
-         int col = in.nextInt() - 1;
+         int row = getInput(1,ROWS)-1;
+         int col = getInput(1,COLS)-1;
+
+         //int row = in.nextInt() - 1;  // array index starts at 0 instead of 1
+         //int col = in.nextInt() - 1;
          if (row >= 0 && row < ROWS && col >= 0 && col < COLS && board[row][col] == EMPTY) {
             currntRow = row;
             currentCol = col;
@@ -89,6 +92,7 @@ public class tictactoe {
          } else {
             System.out.println("This move at (" + (row + 1) + "," + (col + 1)
                   + ") is not valid. Try again...");
+            System.out.print("Please enter a valid number between 1 and "+ROWS+"\n");
          }
       } while (!validInput);  // repeat until input is valid
    }
@@ -124,26 +128,23 @@ public class tictactoe {
         for(int i = 0; i < ROWS; i++){
             if(board[currentRow][i] != theSeed)
                 break;
-            if(i == ROWS-1){
+            if(i == ROWS-1)
               return true;
-            }
         }
         //check row
         for(int i = 0; i < ROWS; i++){
             if(board[i][currentCol] != theSeed)
                 break;
-            if(i == ROWS-1){
+            if(i == ROWS-1)
               return true;
-            }
         }
         //check diagonal
         if(currentRow == currentCol){
             for(int i = 0; i < ROWS; i++){
                 if(board[i][i] != theSeed)
                     break;
-                if(i == ROWS-1){
+                if(i == ROWS-1)
                   return true;
-                }
             }
         }
         //check opposite diagonal
@@ -151,9 +152,8 @@ public class tictactoe {
             for(int i = 0;i<ROWS;i++){
                 if(board[i][(ROWS-1)-i] != theSeed)
                     break;
-                if(i == ROWS-1){
+                if(i == ROWS-1)
                   return true;
-                }
             }
         }
         return false;
@@ -193,6 +193,7 @@ public class tictactoe {
 
    //Method overloading getInput to handle different input error scenarios
    //Uses a default value when no valid input given
+   //Takes any positive value 1 to integer limit 2,147,483,647
    public static int getInput(int def) {
       int userIn = -1;
 
@@ -203,16 +204,18 @@ public class tictactoe {
           System.out.print("No valid number entered.\nDefault board of size "+def+" set!\n\n");
           in = new Scanner(System.in); //reset the scanner
       }
-      return (userIn!=-1)? userIn : def;
+
+      return (userIn>0)? userIn : def;
    }
    //Requires user to provide valid input in a range
+   //Handles re-asking user for valid input
    public static int getInput(int start, int end) {
       int userIn = -1;
 
       try{
         userIn = in.nextInt();
       } catch (InputMismatchException a){
-          System.out.print("Please enter a valid number between "+start+" and "+end+"!");
+          System.out.print("Please enter a valid number between "+start+" and "+end+": ");
           in = new Scanner(System.in);  //reset the scanner
       }
       return (userIn!=-1)? userIn : getInput(start,end);
