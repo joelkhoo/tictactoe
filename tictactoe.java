@@ -244,7 +244,7 @@ public class tictactoe {
       return (userIn!=-1)? userIn : getInput(start,end);
    }
 
-    public static void readScores() {
+   public static void readScores() {
         FileReader fr = null;
         BufferedReader br = null;
 
@@ -260,15 +260,12 @@ public class tictactoe {
               String line = br.readLine();
               int counter = 0;
               while (line!=null) {
-                  //System.out.println(line);
                   line = br.readLine();
 
                   try{
                     scores[counter] = Integer.parseInt(line);
-                    System.out.println("Stored "+scores[counter]+" on "+counter);
                   } catch (NumberFormatException e){
                     //do nothing
-                    
                   }
                   
                   counter++;
@@ -297,7 +294,7 @@ public class tictactoe {
 
     }   
 
-    public static void writeScores(int result) {
+   public static void writeScores(int result) {
 
         BufferedWriter bw = null;
         FileWriter fw = null;
@@ -317,8 +314,6 @@ public class tictactoe {
           for(int i=0;i<scores.length;i++){
             data+= (i!=(scores.length-1))? scores[i]+"\n" : scores[i];
           }
-
-          //File file = new File(FILENAME);
 
           // if file doesnt exists, then create it
           if (!file.exists()) {
