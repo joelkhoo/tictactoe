@@ -4,7 +4,7 @@ import java.util.Scanner;
  * All variables/methods are declared as static (belong to the class)
  *  in the non-OO version.
  */
-public class TTTConsoleNonOO2P {
+public class tictactoe {
    // Name-constants to represent the seeds and cell contents
    public static final int EMPTY = 0;
    public static final int CROSS = 1;
@@ -22,6 +22,7 @@ public class TTTConsoleNonOO2P {
                                                       //  containing (EMPTY, CROSS, NOUGHT)
    public static int currentState;  // the current state of the game
                                     // (PLAYING, DRAW, CROSS_WON, NOUGHT_WON)
+   public static int availableCellsLeft = ROWS * COLS;
    public static int currentPlayer; // the current player (CROSS or NOUGHT)
    public static int currntRow, currentCol; // current seed's row and column
  
@@ -65,11 +66,10 @@ public class TTTConsoleNonOO2P {
    public static void playerMove(int theSeed) {
       boolean validInput = false;  // for input validation
       do {
-         if (theSeed == CROSS) {
-            System.out.print("Player 'X', enter your move (row[1-3] column[1-3]): ");
-         } else {
-            System.out.print("Player 'O', enter your move (row[1-3] column[1-3]): ");
-         }
+
+         String playerName = (theSeed == CROSS)? "X" : "O";
+         System.out.print("Player '"+playerName+"', enter your move (row[1-3] column[1-3]): ");
+
          int row = in.nextInt() - 1;  // array index starts at 0 instead of 1
          int col = in.nextInt() - 1;
          if (row >= 0 && row < ROWS && col >= 0 && col < COLS && board[row][col] == EMPTY) {
@@ -97,6 +97,7 @@ public class TTTConsoleNonOO2P {
  
    /** Return true if it is a draw (no more empty cell) */
    // TODO: Shall declare draw if no player can "possibly" win
+   /*
    public static boolean isDraw() {
       for (int row = 0; row < ROWS; ++row) {
          for (int col = 0; col < COLS; ++col) {
@@ -107,9 +108,38 @@ public class TTTConsoleNonOO2P {
       }
       return true;  // no empty cell, it's a draw
    }
- 
+  */
+
+   //optimization from O(N^2) to O(1) runtime
+   public static boolean isDraw() {
+      //counts down available cells until none are left
+      //declare a draw when no empty cells left for play
+      availableCellsLeft--;
+      return (availableCellsLeft>0)? false : true;
+   }
+
    /** Return true if the player with "theSeed" has won after placing at
        (currentRow, currentCol) */
+
+   public static boolean hasWon(int theSeed, int currentRow, int currentCol) {
+
+
+      return (board[currentRow][0] == theSeed         // 3-in-the-row
+                   && board[currentRow][1] == theSeed
+                   && board[currentRow][2] == theSeed
+              || board[0][currentCol] == theSeed      // 3-in-the-column
+                   && board[1][currentCol] == theSeed
+                   && board[2][currentCol] == theSeed
+              || currentRow == currentCol            // 3-in-the-diagonal
+                   && board[0][0] == theSeed
+                   && board[1][1] == theSeed
+                   && board[2][2] == theSeed
+              || currentRow + currentCol == 2  // 3-in-the-opposite-diagonal
+                   && board[0][2] == theSeed
+                   && board[1][1] == theSeed
+                   && board[2][0] == theSeed);
+   }
+/*       
    public static boolean hasWon(int theSeed, int currentRow, int currentCol) {
       return (board[currentRow][0] == theSeed         // 3-in-the-row
                    && board[currentRow][1] == theSeed
@@ -126,7 +156,7 @@ public class TTTConsoleNonOO2P {
                    && board[1][1] == theSeed
                    && board[2][0] == theSeed);
    }
- 
+ */
    /** Print the game board */
    public static void printBoard() {
       for (int row = 0; row < ROWS; ++row) {
