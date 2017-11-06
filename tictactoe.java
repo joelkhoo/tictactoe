@@ -116,8 +116,8 @@ public class tictactoe {
    /** Return true if the player with "theSeed" has won after placing at
        (currentRow, currentCol) */
 
+   //Checks for winning conditions in N size boards, no hard coding of solutions
    public static boolean hasWon(int theSeed, int currentRow, int currentCol) {
-
         //check col
         for(int i = 0; i < ROWS; i++){
             if(board[currentRow][i] != theSeed)
@@ -126,7 +126,6 @@ public class tictactoe {
               return true;
             }
         }
-
         //check row
         for(int i = 0; i < ROWS; i++){
             if(board[i][currentCol] != theSeed)
@@ -135,7 +134,6 @@ public class tictactoe {
               return true;
             }
         }
-
         //check diagonal
         if(currentRow == currentCol){
             for(int i = 0; i < ROWS; i++){
@@ -146,7 +144,6 @@ public class tictactoe {
                 }
             }
         }
-
         //check opposite diagonal
         if((currentRow + currentCol) == (ROWS - 1)){
             for(int i = 0;i<ROWS;i++){
@@ -157,7 +154,6 @@ public class tictactoe {
                 }
             }
         }
-
         return false;
    }
 
@@ -165,7 +161,7 @@ public class tictactoe {
    public static void printBoard() {
       String x_partition = "";
       for(int length =0 ; length<ROWS;++length){
-          x_partition+="----";
+          x_partition+= (length==0)? "---" : "----";
       }
 
       for (int row = 0; row < ROWS; ++row) {
