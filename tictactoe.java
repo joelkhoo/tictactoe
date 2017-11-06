@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.InputMismatchException;
 /**
  * Tic-Tac-Toe: Two-player console, non-graphics, non-OO version.
  * All variables/methods are declared as static (belong to the class)
@@ -17,12 +18,12 @@ public class tictactoe {
    public static final int NOUGHT_WON = 3;
  
    // The game board and the game status
-   public static int ROWS = 3, COLS = 3; // number of rows and columns
+   public static int ROWS, COLS; // number of rows and columns
    public static int[][] board; // game board in 2D array
                                                       //  containing (EMPTY, CROSS, NOUGHT)
    public static int currentState;  // the current state of the game
                                     // (PLAYING, DRAW, CROSS_WON, NOUGHT_WON)
-   public static int availableCellsLeft;
+   public static int availableCellsLeft; //count moves available to determine if draw
    public static int currentPlayer; // the current player (CROSS or NOUGHT)
    public static int currntRow, currentCol; // current seed's row and column
  
@@ -31,9 +32,10 @@ public class tictactoe {
    /** The entry main method (the program starts here) */
    public static void main(String[] args) {
       // Initialize the game-board and current status
-      System.out.print("How big a board do you wish to play?: ");
-      int size = in.nextInt();
-
+      System.out.print("What n by n size board do you wish to play?\nEnter number 1 or greater (Press ENTER to use default of 3): ");
+      //default value of 3 if no proper number input detected
+      int size = getInput(3);
+      
       initGame(size);
       // Play the game once
       do {
@@ -188,4 +190,32 @@ public class tictactoe {
          case CROSS:  System.out.print(" X "); break;
       }
    }
+
+   //Method overloading getInput to handle different input error scenarios
+   //Uses a default value when no valid input given
+   public static int getInput(int def) {
+      int userIn = -1;
+
+      try{
+        userIn = Integer.parseInt(in.nextLine());
+
+      } catch (NumberFormatException a){
+          System.out.print("No valid number entered.\nDefault board of size "+def+" set!\n\n");
+          in = new Scanner(System.in); //reset the scanner
+      }
+      return (userIn!=-1)? userIn : def;
+   }
+   //Requires user to provide valid input in a range
+   public static int getInput(int start, int end) {
+      int userIn = -1;
+
+      try{
+        userIn = in.nextInt();
+      } catch (InputMismatchException a){
+          System.out.print("Please enter a valid number between "+start+" and "+end+"!");
+          in = new Scanner(System.in);  //reset the scanner
+      }
+      return (userIn!=-1)? userIn : getInput(start,end);
+   }
+  
 }
