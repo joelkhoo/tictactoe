@@ -1,5 +1,10 @@
 import java.util.Scanner;
 import java.util.InputMismatchException;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 /**
  * Tic-Tac-Toe: Two-player console, non-graphics, non-OO version.
  * All variables/methods are declared as static (belong to the class)
@@ -29,8 +34,13 @@ public class tictactoe {
  
    public static Scanner in = new Scanner(System.in); // the input Scanner
  
+   // High score storage
+   private static final String FILENAME = "highscore.txt";
+   private static int[] scores = new int[3]; //#rounds played, #times X won, #times O won
+
    /** The entry main method (the program starts here) */
    public static void main(String[] args) {
+
       // Initialize the game-board and current status
       System.out.print("What n by n size board do you wish to play?\nEnter number 1 or greater (Press ENTER to use default of 3): ");
       //default value of 3 if no proper number input detected
@@ -77,7 +87,7 @@ public class tictactoe {
       do {
 
          String playerName = (theSeed == CROSS)? "X" : "O";
-         System.out.print("Player '"+playerName+"', enter your move (row[1-"+ROWS+"] column[1-"+COLS+"]): ");
+         System.out.print("Player '"+playerName+"', enter your move (row[1-"+ROWS+"]<space>column[1-"+COLS+"]): ");
 
          int row = getInput(1,ROWS)-1;
          int col = getInput(1,COLS)-1;
@@ -102,6 +112,7 @@ public class tictactoe {
    public static void updateGame(int theSeed, int currentRow, int currentCol) {
       if (hasWon(theSeed, currentRow, currentCol)) {  // check if winning move
          currentState = (theSeed == CROSS) ? CROSS_WON : NOUGHT_WON;
+         writeResult(currentState);
       } else if (isDraw()) {  // check for draw
          currentState = DRAW;
       }
@@ -200,7 +211,7 @@ public class tictactoe {
       try{
         userIn = Integer.parseInt(in.nextLine());
 
-      } catch (NumberFormatException a){
+      } catch (NumberFormatException e){
           System.out.print("No valid number entered.\nDefault board of size "+def+" set!\n\n");
           in = new Scanner(System.in); //reset the scanner
       }
@@ -208,17 +219,92 @@ public class tictactoe {
       return (userIn>0)? userIn : def;
    }
    //Requires user to provide valid input in a range
-   //Handles re-asking user for valid input
+   //Handles InputMismatchException while reprompting user for valid input
    public static int getInput(int start, int end) {
       int userIn = -1;
 
       try{
         userIn = in.nextInt();
-      } catch (InputMismatchException a){
-          System.out.print("Please enter a valid number between "+start+" and "+end+": ");
+      } catch (InputMismatchException e){
           in = new Scanner(System.in);  //reset the scanner
       }
+
+      //deem out of bound as error -1
+      //get user input again
+      if((userIn>end)||(userIn<start)){
+        if(userIn!=-1)
+          System.out.println(userIn+" is not valid");
+        userIn = -1;
+        System.out.println("Please enter valid numbers between "+start+" and "+end+": ");
+      }
+
       return (userIn!=-1)? userIn : getInput(start,end);
    }
+
+    public static void readResult() {
+
+        BufferedWriter bw = null;
+        FileWriter fw = null;
+
+    }   
+
+    public static void writeResult(int result) {
+
+        BufferedWriter bw = null;
+        FileWriter fw = null;
+
+        try {
+          //increment the number of rounds
+          scores[0]++;
+
+          switch(result){
+            case 2: scores[1]++; break;
+            case 3: scores[2]++; break;
+            default: break;
+          }
+          
+          String data = "";
+
+          for(int i=0;i<scores.length;i++){
+            data+= (i!=(scores.length-1))? scores[i]+"," : scores[i];
+          }
+
+          File file = new File(FILENAME);
+
+          // if file doesnt exists, then create it
+          if (!file.exists()) {
+            file.createNewFile();
+          }
+
+          // true = append file
+          fw = new FileWriter(file.getAbsoluteFile(), false);
+          bw = new BufferedWriter(fw);
+
+          bw.write(data);
+
+          //System.out.println("Done");
+
+        } catch (IOException e) {
+
+          e.printStackTrace();
+
+        } finally {
+
+          try {
+
+            if (bw != null)
+              bw.close();
+
+            if (fw != null)
+              fw.close();
+
+          } catch (IOException ex) {
+
+            ex.printStackTrace();
+
+          }
+        }
+
+    }   
   
 }
